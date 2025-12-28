@@ -2,6 +2,19 @@
 
 A brutally honest Strava companion app that roasts your activities with AI-powered feedback.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/title.png" width="250" alt="Login Screen"/>
+  <img src="screenshots/activities.png" width="250" alt="Activity List"/>
+  <img src="screenshots/activity_details.png" width="250" alt="Activity Details"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/activity_roast.png" width="250" alt="Activity Roast"/>
+  <img src="screenshots/logout.png" width="250" alt="Logout"/>
+</p>
+
 ## Overview
 
 Spicy Strava connects to your Strava account and analyzes your activities to deliver roasts ranging from gentle encouragement to absolutely savage criticism. Choose your roast severity, hit the button, and get the honest feedback your Strava friends are too polite to give you.

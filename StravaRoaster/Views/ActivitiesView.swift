@@ -88,12 +88,12 @@ struct ActivitiesView: View {
             }
         }
         .alert("Logout", isPresented: $showingLogoutAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Logout", role: .destructive) {
+            Button("I Can Handle It!", role: .cancel) { }
+            Button("Get Out of the Kitchen", role: .destructive) {
                 stravaService.logout()
             }
         } message: {
-            Text("Are you sure you want to logout?")
+            Text("Can't Handle the Heat?")
         }
         .overlay {
             if isLoading && activities.isEmpty {
