@@ -1,10 +1,10 @@
-# Get Roasted
+# Spicy Strava
 
 A brutally honest Strava companion app that roasts your activities with AI-powered feedback.
 
 ## Overview
 
-Get Roasted connects to your Strava account and analyzes your activities to deliver roasts ranging from gentle encouragement to absolutely savage criticism. Choose your roast severity, hit the button, and get the honest feedback your Strava friends are too polite to give you.
+Spicy Strava connects to your Strava account and analyzes your activities to deliver roasts ranging from gentle encouragement to absolutely savage criticism. Choose your roast severity, hit the button, and get the honest feedback your Strava friends are too polite to give you.
 
 ## Features
 
