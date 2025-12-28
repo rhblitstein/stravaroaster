@@ -14,17 +14,29 @@
 		A70215B72F01C54E00C9790D /* Exceptions for "StravaRoaster" folder in "StravaRoaster" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Config.swift.example,
 				Info.plist,
 			);
 			target = A702159F2F01C35000C9790D /* StravaRoaster */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		A70215D02F01EC2300C9790D /* Exceptions for "StravaRoaster" folder in "Compile Sources" phase from "StravaRoaster" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = A702159C2F01C35000C9790D /* Sources */;
+			membershipExceptions = (
+				Config.swift.example,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A70215A22F01C35000C9790D /* StravaRoaster */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				A70215B72F01C54E00C9790D /* Exceptions for "StravaRoaster" folder in "StravaRoaster" target */,
+				A70215D02F01EC2300C9790D /* Exceptions for "StravaRoaster" folder in "Compile Sources" phase from "StravaRoaster" target */,
 			);
 			path = StravaRoaster;
 			sourceTree = "<group>";
