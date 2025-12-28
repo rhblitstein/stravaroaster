@@ -1,0 +1,7 @@
+enum Config {
+    static let stravaClientID = "YOUR_CLIENT_ID_HERE"
+    static let stravaClientSecret = "YOUR_CLIENT_SECRET_HERE"
+    static let stravaRedirectURI = "activityroaster://callback"
+    
+    static let openaiAPIKey = "YOUR_OPENAI_KEY_HERE"
+}
