@@ -235,14 +235,15 @@ struct StatsCard: View {
             Text(value)
                 .font(.title3)
                 .bold()
+                .foregroundColor(.primaryText)
             
             Text(title)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.secondaryText)
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color.backgroundGray)
+        .background(Color.cardBackground)
         .cornerRadius(12)
     }
 }

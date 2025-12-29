@@ -112,7 +112,7 @@ struct ActivityDetailView: View {
                         }
                     }
                     .padding()
-                    .background(Color.backgroundGray)
+                    .background(Color.cardBackground)
                     .cornerRadius(12)
                     
                     if isGenerating {
@@ -328,14 +328,15 @@ struct StatCard: View {
             
             Text(value)
                 .font(.headline)
+                .foregroundColor(.primaryText)
             
             Text(label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.secondaryText)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(Color.cardBackground)
         .cornerRadius(8)
     }
 }

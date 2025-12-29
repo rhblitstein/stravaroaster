@@ -3,7 +3,11 @@ import SwiftUI
 extension Color {
     static let roastOrange = Color(red: 1.0, green: 0.4, blue: 0.0)
     static let roastRed = Color(red: 0.9, green: 0.2, blue: 0.1)
-    static let backgroundGray = Color(red: 0.95, green: 0.95, blue: 0.97)
+    
+    static let backgroundGray = Color(uiColor: .systemGray6)
+    static let cardBackground = Color(uiColor: .secondarySystemGroupedBackground)
+    static let primaryText = Color(uiColor: .label)
+    static let secondaryText = Color(uiColor: .secondaryLabel)
 }
 
 struct RoastButton: ViewModifier {
