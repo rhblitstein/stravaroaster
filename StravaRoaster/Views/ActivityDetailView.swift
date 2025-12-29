@@ -171,6 +171,7 @@ struct ActivityDetailView: View {
                                         Text(segment.name)
                                             .font(.subheadline)
                                             .bold()
+                                            .foregroundColor(.primaryText)  // Add this
                                         
                                         Spacer()
                                         
@@ -196,7 +197,7 @@ struct ActivityDetailView: View {
                                     .foregroundColor(.secondary)
                                 }
                                 .padding()
-                                .background(Color.white)
+                                .background(Color.cardBackground)  // Changed from Color.white
                                 .cornerRadius(8)
                             }
                         }

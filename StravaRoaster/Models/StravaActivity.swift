@@ -31,6 +31,11 @@ struct Photo: Codable {
 struct PhotoURLs: Codable {
     let url_100: String?
     let url_600: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case url_100 = "100"
+        case url_600 = "600"  
+    }
 }
 
 struct SegmentEffort: Codable, Identifiable {
