@@ -25,10 +25,10 @@ struct ContentView: View {
                                 )
                             )
                         
-                        Text("Get Roasted")
+                        Text("Spicy Strava")
                             .font(.system(size: 42, weight: .bold))
                         
-                        Text("Get the truth your Strava friends\nare too afraid to tell you")
+                        Text("Get Roasted.")
                             .font(.title3)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
