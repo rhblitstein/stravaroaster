@@ -4,6 +4,7 @@ struct YouView: View {
     @ObservedObject var stravaService: StravaService
     @State private var selectedTimeframe: Timeframe = .month
     @State private var showingSettings = false
+    @State private var showingWrapped = false
     @State private var activities: [StravaActivity] = []
     @State private var isLoading = false
     
@@ -14,6 +15,7 @@ struct YouView: View {
         case sixMonths = "6 Months"
         case oneYear = "Year"
         case twoYears = "2 Years"
+        case allTime = "All Time"
         
         var dateRange: (start: Date, end: Date) {
             let now = Date()
@@ -33,6 +35,8 @@ struct YouView: View {
                 start = calendar.date(byAdding: .year, value: -1, to: now)!
             case .twoYears:
                 start = calendar.date(byAdding: .year, value: -2, to: now)!
+            case .allTime:
+                start = calendar.date(byAdding: .year, value: -10, to: now)!
             }
             
             return (start, now)
@@ -49,6 +53,10 @@ struct YouView: View {
     
     var totalElevation: Double {
         activities.reduce(0) { $0 + $1.total_elevation_gain }
+    }
+    
+    var totalKudos: Int {
+        activities.reduce(0) { $0 + $1.kudos_count }
     }
     
     var averagePace: String {
@@ -135,8 +143,31 @@ struct YouView: View {
                                     value: "\(Int(totalElevation))m",
                                     icon: "arrow.up"
                                 )
+                                
+                                StatsCard(
+                                    title: "Total Kudos",
+                                    value: "\(totalKudos)",
+                                    icon: "hand.thumbsup.fill"
+                                )
                             }
                         }
+                        
+                        Button {
+                            showingWrapped = true
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Image(systemName: "flame.fill")
+                                Text("Generate \(selectedTimeframe.rawValue) Roasted")
+                                    .bold()
+                                Spacer()
+                            }
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.roastOrange)
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
                     }
                 }
                 .padding(20)
@@ -154,6 +185,12 @@ struct YouView: View {
             }
             .sheet(isPresented: $showingSettings) {
                 SettingsView(stravaService: stravaService)
+            }
+            .fullScreenCover(isPresented: $showingWrapped) {
+                AggregateWrappedView(
+                    activities: activities,
+                    timeframe: selectedTimeframe.rawValue
+                )
             }
             .task {
                 await loadStats()
