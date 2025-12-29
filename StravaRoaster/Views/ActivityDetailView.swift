@@ -3,12 +3,18 @@ import SwiftUI
 struct ActivityDetailView: View {
     let activity: StravaActivity
     @ObservedObject var stravaService: StravaService
+    @State private var roastCache = RoastCache()
     
     @State private var detailedActivity: StravaActivity?
     @State private var isLoadingDetails = false
     @State private var roast: String = ""
     @State private var isGenerating = false
-    @State private var selectedSeverity: MockRoastService.RoastSeverity = .spicy
+    
+    @AppStorage("defaultSpiceLevel") private var defaultSpiceLevel = "Spicy"
+    @AppStorage("runSpiceLevel") private var runSpiceLevel = "Spicy"
+    @AppStorage("rideSpiceLevel") private var rideSpiceLevel = "Spicy"
+    @AppStorage("swimSpiceLevel") private var swimSpiceLevel = "Spicy"
+    @AppStorage("hikeSpiceLevel") private var hikeSpiceLevel = "Spicy"
     
     private let roastService = MockRoastService()
     
@@ -107,30 +113,6 @@ struct ActivityDetailView: View {
                     .background(Color.backgroundGray)
                     .cornerRadius(12)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Roast Severity")
-                            .font(.headline)
-                        
-                        Picker("Severity", selection: $selectedSeverity) {
-                            ForEach(MockRoastService.RoastSeverity.allCases, id: \.self) { severity in
-                                Text(severity.rawValue)
-                                    .minimumScaleFactor(0.5)
-                                    .tag(severity)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                    }
-                    
-                    Button(action: generateRoast) {
-                        HStack {
-                            Image(systemName: roast.isEmpty ? "flame.fill" : "arrow.clockwise")
-                            Text(roast.isEmpty ? "GET ROASTED" : "RE-ROAST")
-                                .bold()
-                        }
-                    }
-                    .roastButtonStyle()
-                    .disabled(isGenerating)
-                    
                     if isGenerating {
                         ProgressView("Generating roast...")
                             .frame(maxWidth: .infinity)
@@ -142,7 +124,7 @@ struct ActivityDetailView: View {
                             HStack {
                                 Image(systemName: "flame.fill")
                                     .foregroundColor(.orange)
-                                Text("Your Roast")
+                                Text("Athlete Unintelligence")
                                     .font(.headline)
                             }
                             
@@ -208,18 +190,7 @@ struct ActivityDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await loadActivityDetails()
-        }
-    }
-    
-    func generateRoast() {
-        Task {
-            isGenerating = true
-            do {
-                roast = try await roastService.generateRoast(for: activity, severity: selectedSeverity)
-            } catch {
-                roast = "Failed to generate roast: \(error)"
-            }
-            isGenerating = false
+            await loadOrGenerateRoast()
         }
     }
     
@@ -231,6 +202,60 @@ struct ActivityDetailView: View {
             print("Failed to load activity details: \(error)")
         }
         isLoadingDetails = false
+    }
+    
+    func loadOrGenerateRoast() async {
+        let severity = getSpiceLevelForActivity(activity.type)
+        let severityString = getSeverityString(severity)
+        
+        if let cachedRoast = roastCache.getRoast(for: activity.id, spiceLevel: severityString) {
+            roast = cachedRoast
+            return
+        }
+        
+        isGenerating = true
+        do {
+            let generatedRoast = try await roastService.generateRoast(for: activity, severity: severity)
+            roast = generatedRoast
+            roastCache.saveRoast(generatedRoast, for: activity.id, spiceLevel: severityString)
+        } catch {
+            roast = "Failed to generate roast: \(error)"
+        }
+        isGenerating = false
+    }
+
+    func getSeverityString(_ severity: MockRoastService.RoastSeverity) -> String {
+        switch severity {
+        case .mild: return "Mild"
+        case .spicy: return "Spicy"
+        case .caliente: return "Caliente"
+        case .ghostPepper: return "GhostPepper"
+        }
+    }
+    
+    func getSpiceLevelForActivity(_ type: String) -> MockRoastService.RoastSeverity {
+        let levelString: String
+        
+        switch type.lowercased() {
+        case "run", "trailrun":
+            levelString = runSpiceLevel
+        case "ride":
+            levelString = rideSpiceLevel
+        case "swim":
+            levelString = swimSpiceLevel
+        case "hike":
+            levelString = hikeSpiceLevel
+        default:
+            levelString = defaultSpiceLevel
+        }
+        
+        switch levelString {
+        case "Mild": return .mild
+        case "Spicy": return .spicy
+        case "Caliente": return .caliente
+        case "🌶️🌶️🌶️": return .ghostPepper
+        default: return .spicy
+        }
     }
 }
 

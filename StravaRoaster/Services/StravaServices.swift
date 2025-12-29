@@ -41,6 +41,26 @@ class StravaService: ObservableObject {
         }
     }
     
+    func fetchAthlete() async throws -> StravaAthlete {
+        guard let token = accessToken else {
+            throw StravaError.notAuthenticated
+        }
+        
+        let url = URL(string: "https://www.strava.com/api/v3/athlete")!
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let athlete = try JSONDecoder().decode(StravaAthlete.self, from: data)
+        
+        return athlete
+    }
+
+    struct StravaAthlete: Codable {
+        let firstname: String
+        let lastname: String
+    }
+    
     func fetchActivities() async throws -> [StravaActivity] {
         guard let token = accessToken else {
             throw StravaError.notAuthenticated
@@ -73,6 +93,55 @@ class StravaService: ObservableObject {
         let activity = try JSONDecoder().decode(StravaActivity.self, from: data)
         
         return activity
+    }
+    
+    func fetchActivities(after: Date? = nil, before: Date? = nil, perPage: Int = 30) async throws -> [StravaActivity] {
+        guard let token = accessToken else {
+            throw StravaError.notAuthenticated
+        }
+        
+        var components = URLComponents(string: "https://www.strava.com/api/v3/athlete/activities")!
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "per_page", value: "\(perPage)")
+        ]
+        
+        if let after = after {
+            queryItems.append(URLQueryItem(name: "after", value: "\(Int(after.timeIntervalSince1970))"))
+        }
+        
+        if let before = before {
+            queryItems.append(URLQueryItem(name: "before", value: "\(Int(before.timeIntervalSince1970))"))
+        }
+        
+        components.queryItems = queryItems
+        
+        var request = URLRequest(url: components.url!)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let activities = try JSONDecoder().decode([StravaActivity].self, from: data)
+        
+        return activities
+    }
+    
+    func fetchActivitiesPaginated(page: Int = 1, perPage: Int = 20) async throws -> [StravaActivity] {
+        guard let token = accessToken else {
+            throw StravaError.notAuthenticated
+        }
+        
+        var components = URLComponents(string: "https://www.strava.com/api/v3/athlete/activities")!
+        components.queryItems = [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "per_page", value: "\(perPage)")
+        ]
+        
+        var request = URLRequest(url: components.url!)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let activities = try JSONDecoder().decode([StravaActivity].self, from: data)
+        
+        return activities
     }
     
     func logout() {
