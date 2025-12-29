@@ -9,6 +9,7 @@ struct ActivityDetailView: View {
     @State private var isLoadingDetails = false
     @State private var roast: String = ""
     @State private var isGenerating = false
+    @State private var showingWrapped = false
     
     @AppStorage("defaultSpiceLevel") private var defaultSpiceLevel = "Spicy"
     @AppStorage("runSpiceLevel") private var runSpiceLevel = "Spicy"
@@ -130,9 +131,27 @@ struct ActivityDetailView: View {
                             
                             Text(roast)
                                 .font(.body)
+                                .foregroundColor(.primary)
+                                .multilineTextAlignment(.leading)
                                 .padding()
                                 .background(Color.orange.opacity(0.1))
                                 .cornerRadius(8)
+                            
+                            Button {
+                                showingWrapped = true
+                            } label: {
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "flame.fill")
+                                    Text("See Full Roast")
+                                        .bold()
+                                    Spacer()
+                                }
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.roastOrange)
+                                .cornerRadius(12)
+                            }
                         }
                     }
                     
@@ -188,6 +207,12 @@ struct ActivityDetailView: View {
         .scrollIndicators(.visible)
         .navigationTitle("Activity Roast")
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(isPresented: $showingWrapped) {
+            WrappedSlidesView(
+                activity: detailedActivity ?? activity,
+                severity: getSpiceLevelForActivity(activity.type)
+            )
+        }
         .task {
             await loadActivityDetails()
             await loadOrGenerateRoast()
@@ -223,15 +248,6 @@ struct ActivityDetailView: View {
         }
         isGenerating = false
     }
-
-    func getSeverityString(_ severity: MockRoastService.RoastSeverity) -> String {
-        switch severity {
-        case .mild: return "Mild"
-        case .spicy: return "Spicy"
-        case .caliente: return "Caliente"
-        case .ghostPepper: return "GhostPepper"
-        }
-    }
     
     func getSpiceLevelForActivity(_ type: String) -> MockRoastService.RoastSeverity {
         let levelString: String
@@ -255,6 +271,15 @@ struct ActivityDetailView: View {
         case "Caliente": return .caliente
         case "🌶️🌶️🌶️": return .ghostPepper
         default: return .spicy
+        }
+    }
+    
+    func getSeverityString(_ severity: MockRoastService.RoastSeverity) -> String {
+        switch severity {
+        case .mild: return "Mild"
+        case .spicy: return "Spicy"
+        case .caliente: return "Caliente"
+        case .ghostPepper: return "GhostPepper"
         }
     }
 }
