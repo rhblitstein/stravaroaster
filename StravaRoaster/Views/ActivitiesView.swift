@@ -27,65 +27,73 @@ struct ActivitiesView: View {
                                 activity: activity,
                                 stravaService: stravaService
                             )) {
-                                HStack(spacing: 12) {
-                                    if let photoCount = activity.photo_count, photoCount > 0 {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Color.roastOrange.opacity(0.2))
-                                                .frame(width: 50, height: 50)
-                                            Image(systemName: "camera.fill")
-                                                .foregroundColor(.roastOrange)
-                                        }
-                                    } else {
-                                        Image(systemName: activityIcon(for: activity.type))
-                                            .font(.title2)
-                                            .foregroundColor(.roastOrange)
-                                            .frame(width: 50, height: 50)
-                                    }
+                                HStack(spacing: 16) {
+                                    // Icon
+                                    Image(systemName: activityIcon(for: activity.type))
+                                        .font(.title2)
+                                        .foregroundColor(.roastOrange)
+                                        .frame(width: 40)
                                     
-                                    VStack(alignment: .leading, spacing: 8) {
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        // Title
                                         Text(activity.name)
                                             .font(.headline)
                                             .lineLimit(1)
                                         
-                                        HStack(spacing: 12) {
-                                            Label("\(String(format: "%.1f", activity.distanceMiles)) mi",
-                                                  systemImage: "arrow.right")
+                                        // Primary stats (horizontal)
+                                        HStack(spacing: 16) {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "arrow.right")
+                                                    .font(.caption2)
+                                                Text(String(format: "%.1f mi", activity.distanceMiles))
+                                                    .font(.subheadline)
+                                            }
                                             
-                                            Label(activity.pacePerMile,
-                                                  systemImage: "gauge.medium")
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "speedometer")
+                                                    .font(.caption2)
+                                                Text(activity.pacePerMile)
+                                                    .font(.subheadline)
+                                            }
                                             
-                                            Label(activity.movingTimeFormatted,
-                                                  systemImage: "clock")
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "clock")
+                                                    .font(.caption2)
+                                                Text(formatTime(activity.moving_time))
+                                                    .font(.subheadline)
+                                            }
                                         }
-                                        .font(.caption)
                                         .foregroundColor(.secondary)
                                         
+                                        // Secondary stats (kudos, photos, achievements)
                                         HStack(spacing: 12) {
                                             HStack(spacing: 4) {
                                                 Image(systemName: "hand.thumbsup.fill")
+                                                    .font(.caption2)
                                                 Text("\(activity.kudos_count)")
+                                                    .font(.caption)
                                             }
                                             
                                             if let photoCount = activity.photo_count, photoCount > 0 {
                                                 HStack(spacing: 4) {
                                                     Image(systemName: "camera.fill")
+                                                        .font(.caption2)
                                                     Text("\(photoCount)")
+                                                        .font(.caption)
                                                 }
                                             }
                                             
                                             if let achievements = activity.achievement_count, achievements > 0 {
                                                 HStack(spacing: 4) {
                                                     Image(systemName: "trophy.fill")
+                                                        .font(.caption2)
                                                     Text("\(achievements)")
+                                                        .font(.caption)
                                                 }
                                             }
                                         }
-                                        .font(.caption)
                                         .foregroundColor(.roastOrange)
                                     }
-                                    
-                                    Spacer()
                                 }
                                 .padding(.vertical, 8)
                             }
@@ -107,6 +115,7 @@ struct ActivitiesView: View {
                             .padding()
                         }
                     }
+                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Activities")
@@ -164,6 +173,17 @@ struct ActivitiesView: View {
         case "hike": return "figure.hiking"
         case "walk": return "figure.walk"
         default: return "figure.mixed.cardio"
+        }
+    }
+    
+    func formatTime(_ seconds: Int) -> String {
+        let hours = seconds / 3600
+        let minutes = (seconds % 3600) / 60
+        
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
         }
     }
 }
