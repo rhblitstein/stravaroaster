@@ -10,6 +10,7 @@ struct ActivityDetailView: View {
     @State private var roast: String = ""
     @State private var isGenerating = false
     @State private var showingWrapped = false
+    @AppStorage("autoPostRoasts") private var autoPostRoasts = false
     
     @AppStorage("defaultSpiceLevel") private var defaultSpiceLevel = "Spicy"
     @AppStorage("runSpiceLevel") private var runSpiceLevel = "Spicy"
@@ -228,7 +229,7 @@ struct ActivityDetailView: View {
         }
         isLoadingDetails = false
     }
-    
+
     func loadOrGenerateRoast() async {
         let severity = getSpiceLevelForActivity(activity.type)
         let severityString = getSeverityString(severity)
@@ -243,10 +244,40 @@ struct ActivityDetailView: View {
             let generatedRoast = try await roastService.generateRoast(for: activity, severity: severity)
             roast = generatedRoast
             roastCache.saveRoast(generatedRoast, for: activity.id, spiceLevel: severityString)
+            
+            // Auto-post to Strava if enabled
+            if autoPostRoasts {
+                await postRoastToStrava(generatedRoast)
+            }
         } catch {
             roast = "Failed to generate roast: \(error)"
         }
         isGenerating = false
+    }
+
+    func postRoastToStrava(_ roast: String) async {
+        do {
+            // Get current description if it exists
+            let currentDescription = detailedActivity?.description ?? activity.description ?? ""
+            
+            // Create new description with roast appended
+            let roastPrefix = "\n\n🔥 Roasted: "
+            let newDescription: String
+            
+            if currentDescription.contains("🔥 Roasted:") {
+                // Already has a roast, don't add another
+                return
+            } else if currentDescription.isEmpty {
+                newDescription = "🔥 Roasted: \(roast)"
+            } else {
+                newDescription = currentDescription + roastPrefix + roast
+            }
+            
+            try await stravaService.updateActivityDescription(id: activity.id, description: newDescription)
+            print("Successfully posted roast to Strava!")
+        } catch {
+            print("Failed to post roast to Strava: \(error)")
+        }
     }
     
     func getSpiceLevelForActivity(_ type: String) -> MockRoastService.RoastSeverity {

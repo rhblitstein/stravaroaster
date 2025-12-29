@@ -11,8 +11,8 @@ class StravaService: ObservableObject {
             URLQueryItem(name: "client_id", value: Config.stravaClientID),
             URLQueryItem(name: "redirect_uri", value: Config.stravaRedirectURI),
             URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "approval_prompt", value: "auto"),
-            URLQueryItem(name: "scope", value: "read,activity:read_all")
+            URLQueryItem(name: "approval_prompt", value: "force"),
+            URLQueryItem(name: "scope", value: "read,activity:read_all,activity:write")
         ]
         return components?.url
     }
@@ -142,6 +142,31 @@ class StravaService: ObservableObject {
         let activities = try JSONDecoder().decode([StravaActivity].self, from: data)
         
         return activities
+    }
+    
+    func updateActivityDescription(id: Int, description: String) async throws {
+        guard let token = accessToken else {
+            throw StravaError.notAuthenticated
+        }
+        
+        let url = URL(string: "https://www.strava.com/api/v3/activities/\(id)")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let body: [String: Any] = [
+            "description": description
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw StravaError.notAuthenticated
+        }
     }
     
     func logout() {

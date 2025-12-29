@@ -10,6 +10,7 @@ struct SettingsView: View {
     @AppStorage("rideSpiceLevel") private var rideSpiceLevel = "Spicy"
     @AppStorage("swimSpiceLevel") private var swimSpiceLevel = "Spicy"
     @AppStorage("hikeSpiceLevel") private var hikeSpiceLevel = "Spicy"
+    @AppStorage("autoPostRoasts") private var autoPostRoasts = false
     
     let spiceLevels = ["Mild", "Spicy", "Caliente", "🌶️🌶️🌶️"]
     
@@ -48,6 +49,14 @@ struct SettingsView: View {
                     }
                 }
                 
+                Section {
+                    Toggle("Auto-post roasts to Strava", isOn: $autoPostRoasts)
+                } header: {
+                    Text("Strava Integration")
+                } footer: {
+                    Text("When enabled, roasts will be automatically added to your activity descriptions on Strava.")
+                }
+                
                 Section("Account") {
                     Button(role: .destructive) {
                         showingLogoutAlert = true
@@ -77,7 +86,7 @@ struct SettingsView: View {
                     dismiss()
                 }
             } message: {
-                Text("Logging out will end your roast session.")
+                Text("Logging out will end your roasting session.")
             }
         }
     }
